@@ -48,7 +48,8 @@ class HCLRunner:
                 build_string = build_string[:-1]  # remove trailing comma
             build_string += "]"
             return build_string
-        elif isinstance(value, dict):
+
+        if isinstance(value, dict):
             build_string = "{"
             for key, val in value.items():
                 if isinstance(val, str):
@@ -61,6 +62,10 @@ class HCLRunner:
             build_string += "}"
 
             return build_string
+
+        if isinstance(value, bool):
+            return str(value).lower()
+
         return str(value)
 
     def extract_vars(self) -> dict[str, str]:
