@@ -1,3 +1,7 @@
+install-skill:
+	mkdir -p ~/.claude/skills/strong-opx
+	cp .claude/skills/strong-opx/SKILL.md ~/.claude/skills/strong-opx/SKILL.md
+
 lint:
 	black . --check --quiet
 	isort . --check-only
