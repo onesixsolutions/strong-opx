@@ -54,6 +54,21 @@ git clone git@github.com:org/<project-name>
 strong-opx project register ./<project-name>
 ```
 
+### How the active project/environment is resolved
+When no `--project` flag is given, strong-opx resolves the project in this order:
+
+1. **Directory tree walk** — walks up from the current directory looking for `strong-opx.yml`. If found and the project is registered, it is used. This means running commands from inside the project directory Just Works.
+2. **`STRONG_OPX_PROJECT` env var** — used if no config file is found in the tree.
+3. **Interactive registry prompt** — if neither of the above resolves, the user is prompted to pick from all registered projects.
+
+If the found `strong-opx.yml` names a project that isn't registered (or is registered at a different path), an error is raised — fix it with `strong-opx project register <path>`.
+
+When no `--env` flag is given, strong-opx resolves the environment in this order:
+
+1. **Auto-select** — if the project has exactly one environment, it is used automatically.
+2. **`STRONG_OPX_ENVIRONMENT` env var** — used when multiple environments exist.
+3. **Interactive prompt** — if the env var is not set, the user is prompted to pick from available environments.
+
 ### Scaffold an environment
 Run from inside the project directory:
 ```bash
