@@ -10,7 +10,9 @@ description: >
 # Strong-OpX Agent Guide
 
 Strong-OpX (`strong-opx`) unifies infrastructure management across cloud providers. Projects are defined by
-`strong-opx.yml` at the repo root. Per-environment configuration lives in `environments/<env>/config.yml`.
+`strong-opx.yml` at the repo root. Per-environment configuration lives in `environments/<env>/config.yml` by
+default, but if `dirname` is set in `strong-opx.yml`, all infra paths are prefixed with that directory
+(e.g. `dirname: ops` → `ops/environments/<env>/config.yml`).
 
 ---
 
@@ -57,7 +59,8 @@ Run from inside the project directory:
 ```bash
 strong-opx g environment
 ```
-Creates `environments/<env>/config.yml`. Typical names: `staging`, `production`, `development`, `default`.
+Creates `environments/<env>/config.yml` (or `<dirname>/environments/<env>/config.yml` if `dirname` is set).
+Typical names: `staging`, `production`, `development`, `default`.
 
 ---
 
@@ -65,6 +68,9 @@ Creates `environments/<env>/config.yml`. Typical names: `staging`, `production`,
 
 ```yaml
 name: <project-name>          # Required. Do not change after init.
+dirname: ops                  # Optional. Moves all infra paths under this dir.
+                              # e.g. ops/environments/<env>/config.yml,
+                              #      ops/terraform/, ops/kubectl/, etc.
 
 strong_opx:                   # Optional
   required_version: ">=1.4"
@@ -115,15 +121,9 @@ hosts:
   bastion:
     - 52.1.2.3               # Special group — routes private-IP connections
 
-# SSH config (required for Generic platform):
-ssh:
-  user: ubuntu
-  key: ~/.ssh/id_rsa
-
 # AWS override for this environment:
 aws:
   region: us-west-2
-  aws_profile: my-profile
 ```
 
 ---
@@ -142,10 +142,10 @@ strong-opx vars encrypt --vars VAR_NAME_1 VAR_NAME_2
 ```
 
 ### Decrypt variables
-> **Ask the user before decrypting.** Decryption exposes secrets in the terminal.
+> **Ask the user before decrypting.** Decryption exposes all variables includig secrets in the terminal.
 
 ```bash
-strong-opx vars decrypt --vars VAR_NAME_1
+strong-opx vars decrypt
 ```
 
 ---
@@ -160,8 +160,8 @@ strong-opx deploy --project <project-name> --env <env>
 strong-opx deploy --project <project-name> --env <env> kubectl/subdir
 ```
 
-Kubernetes platform: scans `kubectl/` directory and applies all YAMLs. Files named `foo.<env>.yml`
-are applied only to the matching environment.
+Kubernetes platform: scans `kubectl/` directory (or `<dirname>/kubectl/` if `dirname` is set) and applies
+all YAMLs. Files named `foo.<env>.yml` are applied only to the matching environment.
 
 Generic platform: runs Ansible playbooks via `ansible-playbook`.
 
@@ -182,8 +182,8 @@ strong-opx terraform destroy --env <env>
 strong-opx terraform apply --env <env> -- -var="key=value"
 ```
 
-Backend config goes in `environments/<env>/.tfbackend` (plain key=value, no block wrapper).
-Shared `.tf` files go in `terraform/` at project root.
+Backend config goes in `environments/<env>/.tfbackend` (or `<dirname>/environments/<env>/.tfbackend`).
+Shared `.tf` files go in `terraform/` (or `<dirname>/terraform/`) at project root.
 
 ---
 
@@ -333,6 +333,9 @@ strong-opx aws:mfa --token <6-digit-code> --profile <profile-name>
 # Optional duration (seconds):
 strong-opx aws:mfa --token 123456 --profile my-profile --duration 3600
 ```
+The `--profile` here is the base profile name (without `--mfa`). Long-term credentials stay in
+`my-profile--mfa`; temporary credentials are written to `my-profile` — so callers always use the plain
+profile name (e.g. `my-profile`), not `my-profile--mfa`.
 
 ---
 
