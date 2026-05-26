@@ -1,5 +1,4 @@
 ---
-name: strong-opx
 description: >
   Use when working with Strong-OpX — a CLI tool that unifies cloud deployments across AWS, Azure, and
   Google Cloud. Covers installation, project and environment setup, vars and secrets management, deploy,

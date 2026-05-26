@@ -1,0 +1,11 @@
+{
+  "name": "strong-opx",
+  "version": "0.1.0",
+  "description": "Strong-OpX related skills for environment setup and deployment",
+  "author": {
+    "name": "Adnan Umer",
+    "email": "adnan.umer@onesixsolutions.com"
+  },
+  "homepage": "https://github.com/onesixsolutions/strong-opx",
+  "repository": "https://github.com/onesixsolutions/strong-opx"
+}
